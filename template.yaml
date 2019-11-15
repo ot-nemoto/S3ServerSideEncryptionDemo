@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  NonEncryptedBucket:
+    Type: AWS::S3::Bucket
+  EncryptedBucketBySSES3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+  EncryptedBucketBySSEKMS:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: aws:kms
+
+  KmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: 'Key created with S3ServerSideEncryptionDemo template.'
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal: "*"
+          Action: "kms:*"
+          Resource: "*"
+  EncryptedBucketByCustomerSSEKMS:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            KMSMasterKeyID: !Ref KmsKey
+            SSEAlgorithm: aws:kms
+
+Outputs:
+  NonEncryptedBucket:
+    Value: !Ref NonEncryptedBucket
+  EncryptedBucketBySSES3:
+    Value: !Ref EncryptedBucketBySSES3
+  EncryptedBucketBySSEKMS:
+    Value: !Ref EncryptedBucketBySSEKMS
+  EncryptedBucketByCustomerSSEKMS:
+    Value: !Ref EncryptedBucketByCustomerSSEKMS
