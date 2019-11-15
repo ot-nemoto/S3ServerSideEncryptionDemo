@@ -1,6 +1,6 @@
 # S3ServerSideEncryptionDemo
 
-!(sample)[sample.png]
+![sample](https://github.com/ot-nemoto/S3ServerSideEncryptionDemo/blob/master/sample.png)
 
 ## 概要
 
