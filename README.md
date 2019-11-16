@@ -316,3 +316,52 @@ aws s3api head-object \
   #     "Metadata": {}
   # }
 ```
+
+## クリーンアップ
+
+非暗号化バケットのオブジェクトを削除
+
+```sh
+NON_ENCRYPTED_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name s3-server-side-encryption-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`NonEncryptedBucket`].OutputValue' \
+    --output text)
+aws s3 rm s3://${NON_ENCRYPTED_BUCKET} --recursive
+```
+
+SSE-S3暗号化バケットのオブジェクトを削除
+
+```sh
+SSE_S3_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name s3-server-side-encryption-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketBySSES3`].OutputValue' \
+    --output text)
+aws s3 rm s3://${SSE_S3_ENCRYTED_BUCKET} --recursive
+```
+
+SSE-KMS暗号化バケットのオブジェクトを削除
+
+```sh
+SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name s3-server-side-encryption-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketBySSEKMS`].OutputValue' \
+    --output text)
+aws s3 rm s3://${SSE_KMS_ENCRYTED_BUCKET} --recursive
+```
+
+KMSに作成したキーを利用しSSE-KMS暗号化バケットのオブジェクトを削除
+
+```sh
+CUSTOMER_SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name s3-server-side-encryption-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketByCustomerSSEKMS`].OutputValue' \
+    --output text)
+aws s3 rm s3://${CUSTOMER_SSE_KMS_ENCRYTED_BUCKET} --recursive
+```
+
+スタック（S3バケットとKMSキー）を削除
+
+```sh
+aws cloudformation delete-stack \
+    --stack-name s3-server-side-encryption-demo
+```
