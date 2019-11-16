@@ -13,7 +13,6 @@
 ```sh
 aws cloudformation create-stack \
     --stack-name s3-server-side-encryption-demo \
-    --capabilities CAPABILITY_IAM \
     --template-body file://template.yaml
 ```
 
