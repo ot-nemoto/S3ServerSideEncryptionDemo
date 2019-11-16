@@ -17,7 +17,7 @@ aws cloudformation create-stack \
     --template-body file://template.yaml
 ```
 
-### バケット名取得
+### バケット名取得とバケット設定の確認
 
 非暗号化バケット
 
@@ -28,6 +28,11 @@ NON_ENCRYPTED_BUCKET=$(aws cloudformation describe-stacks \
     --output text)
 echo ${NON_ENCRYPTED_BUCKET}
   #
+
+aws s3api get-bucket-encryption \
+    --bucket ${NON_ENCRYPTED_BUCKET}
+  #
+  # An error occurred (ServerSideEncryptionConfigurationNotFoundError) when calling the GetBucketEncryption operation: The server side encryption configuration was not found
 ```
 
 SSE-S3暗号化バケット
@@ -39,41 +44,7 @@ SSE_S3_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
     --output text)
 echo ${SSE_S3_ENCRYTED_BUCKET}
   #
-```
 
-SSE-KMS暗号化バケット
-
-```sh
-SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
-    --stack-name s3-server-side-encryption-demo \
-    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketBySSEKMS`].OutputValue' \
-    --output text)
-echo ${SSE_KMS_ENCRYTED_BUCKET}
-  #
-```
-
-KMSに作成したキーを利用しSSE-KMS暗号化パケット
-
-```sh
-CUSTOMER_SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
-    --stack-name s3-server-side-encryption-demo \
-    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketByCustomerSSEKMS`].OutputValue' \
-    --output text)
-echo ${CUSTOMER_SSE_KMS_ENCRYTED_BUCKET}
-  #
-```
-
-### バケットの暗号化設定を確認
-
-
-```sh
-aws s3api get-bucket-encryption \
-    --bucket ${NON_ENCRYPTED_BUCKET}
-  #
-  # An error occurred (ServerSideEncryptionConfigurationNotFoundError) when calling the GetBucketEncryption operation: The server side encryption configuration was not found
-```
-
-```sh
 aws s3api get-bucket-encryption \
     --bucket ${SSE_S3_ENCRYTED_BUCKET}
   # {
@@ -89,7 +60,16 @@ aws s3api get-bucket-encryption \
   # }
 ```
 
+SSE-KMS暗号化バケット
+
 ```sh
+SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name s3-server-side-encryption-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketBySSEKMS`].OutputValue' \
+    --output text)
+echo ${SSE_KMS_ENCRYTED_BUCKET}
+  #
+
 aws s3api get-bucket-encryption \
     --bucket ${SSE_KMS_ENCRYTED_BUCKET}
   # {
@@ -105,7 +85,16 @@ aws s3api get-bucket-encryption \
   # }
 ```
 
+KMSに作成したキーを利用しSSE-KMS暗号化パケット
+
 ```sh
+CUSTOMER_SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name s3-server-side-encryption-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`EncryptedBucketByCustomerSSEKMS`].OutputValue' \
+    --output text)
+echo ${CUSTOMER_SSE_KMS_ENCRYTED_BUCKET}
+  #
+
 aws s3api get-bucket-encryption \
     --bucket ${CUSTOMER_SSE_KMS_ENCRYTED_BUCKET}
   # {
@@ -122,7 +111,9 @@ aws s3api get-bucket-encryption \
   # }
 ```
 
-### ファイルをアップロード
+### バケットにファイルをアップロード
+
+非暗号化バケット
 
 ```sh
 aws s3api put-object \
@@ -133,6 +124,8 @@ aws s3api put-object \
   #     "ETag": "\"b420fe104fb7b48b5dcd12de92c444b8\""
   # }
 ```
+
+SSE-S3暗号化バケット
 
 ```sh
 aws s3api put-object \
@@ -145,6 +138,8 @@ aws s3api put-object \
   # }
 ```
 
+SSE-KMS暗号化バケット
+
 ```sh
 aws s3api put-object \
     --bucket ${SSE_KMS_ENCRYTED_BUCKET} \
@@ -156,6 +151,8 @@ aws s3api put-object \
   #     "ServerSideEncryption": "aws:kms"
   # }
 ```
+
+KMSに作成したキーを利用しSSE-KMS暗号化パケット
 
 ```sh
 aws s3api put-object \
@@ -290,7 +287,7 @@ aws s3api put-object \
   # }
 ```
 
-ユーザがキーを指定した場合、複合化する場合には、キーを指定する必要がある
+### SSE-Cで暗号化したオブジェクトを取得
 
 ```sh
 aws s3api head-object \
@@ -299,6 +296,8 @@ aws s3api head-object \
   # 
   # An error occurred (400) when calling the HeadObject operation: Bad Request
 ```
+
+ユーザがキーを指定した場合、複合化する場合には、キーを指定する必要がある
 
 ```sh
 aws s3api head-object \
