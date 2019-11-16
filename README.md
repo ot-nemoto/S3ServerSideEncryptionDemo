@@ -1,12 +1,14 @@
 # S3ServerSideEncryptionDemo
 
-![sample](https://github.com/ot-nemoto/S3ServerSideEncryptionDemo/blob/master/sample.png)
+<img src="https://github.com/ot-nemoto/S3ServerSideEncryptionDemo/blob/master/sample.png" width="100px">
 
 ## 概要
 
 - S3サーバサード暗号化を検証してみたデモ
 
 ## 構成
+
+![構成](https://github.com/ot-nemoto/S3ServerSideEncryptionDemo/blob/images/S3ServerSideEncryptionDemo.png)
 
 ## デプロイ
 
