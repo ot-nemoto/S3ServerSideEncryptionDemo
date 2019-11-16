@@ -85,7 +85,7 @@ aws s3api get-bucket-encryption \
   # }
 ```
 
-KMSに作成したキーを利用しSSE-KMS暗号化パケット
+KMSに作成したキーを利用しSSE-KMS暗号化バケット
 
 ```sh
 CUSTOMER_SSE_KMS_ENCRYTED_BUCKET=$(aws cloudformation describe-stacks \
@@ -152,7 +152,7 @@ aws s3api put-object \
   # }
 ```
 
-KMSに作成したキーを利用しSSE-KMS暗号化パケット
+KMSに作成したキーを利用しSSE-KMS暗号化バケット
 
 ```sh
 aws s3api put-object \
